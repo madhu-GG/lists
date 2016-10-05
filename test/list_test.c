@@ -1,4 +1,4 @@
-#include "API/list.h"
+#include "LIST/list.h"
 #include "criterion/criterion.h"
 
 int t_intCmp(void* a, void* b)

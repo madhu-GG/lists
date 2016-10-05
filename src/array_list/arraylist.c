@@ -1,4 +1,4 @@
-#include "API/list.h"
+#include "LIST/list.h"
 #include <stdlib.h>
 
 #define LIST_SIZE_DEFAULT 8
