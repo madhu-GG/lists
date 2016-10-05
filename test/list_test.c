@@ -13,7 +13,7 @@ Test(List_test, t_neg__List_new)
     cr_expect_eq(List_new(NULL), NULL, "Expected List_new() to fail on NULL compare");
 
     List* t_list = List_new(t_intCmp);
-    cr_expect_neq(t_list, NULL, "Expected List_new() to not fail on 0 size and non-null compare");
+    cr_expect_neq(t_list, NULL, "List_new() failed to allocate list");
 
     List_delete(t_list);
 }
