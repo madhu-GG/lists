@@ -1,5 +1,6 @@
 #include "LIST/list.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 #define LIST_SIZE_DEFAULT 8
 
@@ -14,7 +15,7 @@ struct List
     List_cmpFunc cmp;
 };
 
-List *List_new(List_cmpFunc cmp_func)
+List *List_create(List_cmpFunc cmp_func)
 {
     size_t size;
 
@@ -216,6 +217,22 @@ void List_downsize(List* list)
     }
 }
 
+void* List_at(List* list, size_t pos)
+{
+    if(list->num_vals == 0)
+    {
+        printf("numvals is 0");
+        return NULL;
+    }
+    if(list->num_vals <= pos)
+    {
+        printf("pos is >= num_vals");
+        return NULL;
+    }
+
+    return list->arr[pos];
+}
+
 int List_intCmp(void *a, void *b)
 {
     int ia = *(int*)a;
@@ -223,3 +240,4 @@ int List_intCmp(void *a, void *b)
 
     return (ia < ib)? -1 : ((ia == ib)? 0 : 1);
 }
+

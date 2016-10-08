@@ -7,20 +7,20 @@ int t_intCmp(void* a, void* b)
     return res;
 }
 
-Test(List_test, t_neg__List_new)
+Test(List_test, t_neg__List_create)
 {
     
-    cr_expect_eq(List_new(NULL), NULL, "Expected List_new() to fail on NULL compare");
+    cr_expect_eq(List_create(NULL), NULL, "Expected List_create() to fail on NULL compare");
 
-    List* t_list = List_new(t_intCmp);
-    cr_expect_neq(t_list, NULL, "List_new() failed to allocate list");
+    List* t_list = List_create(t_intCmp);
+    cr_expect_neq(t_list, NULL, "List_create() failed to allocate list");
 
     List_delete(t_list);
 }
 
-Test(List_test, t_pos__List_new)
+Test(List_test, t_pos__List_create)
 {
-    List* t_list = List_new(t_intCmp);
-    cr_assert_neq(t_list,  NULL, "List_new() failed!");
+    List* t_list = List_create(t_intCmp);
+    cr_assert_neq(t_list,  NULL, "List_create() failed!");
     List_delete(t_list);
 }

@@ -22,7 +22,7 @@ typedef int (*List_cmpFunc)(void*, void*);
 /*
  * List creation function.
  */
-List *List_new(List_cmpFunc);
+List *List_create(List_cmpFunc);
 
 /*
  * free the memory allocated to the given list. do nothing if NULL.
