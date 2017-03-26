@@ -15,6 +15,11 @@ struct List
     List_cmpFunc cmp;
 };
 
+size_t List_size(List* list)
+{
+    return (list == NULL)? 0 :  list->num_vals;
+}
+
 List *List_create(List_cmpFunc cmp_func)
 {
     size_t size;

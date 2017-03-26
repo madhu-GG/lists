@@ -74,4 +74,9 @@ bool List_contains(List*, void*);
  */
 void* List_at(List*, size_t);
 
+/*
+ * return the number of elements in the list.
+ */
+size_t List_size(List*);
+
 #endif /* LIST_H */
