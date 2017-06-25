@@ -7,13 +7,14 @@ ARR_SRC=$(SRC)/array_list
 
 ARR_LIB=$(LIB)/libarraylist.a
 
-arraylist: $(ARR_LIB)
+$(ARR_LIB): $(OBJ)/arraylist.o
+	$(AR) rcs $@ $^
 
-$(ARR_LIB): $(ARR_SRC)/*.c
+$(OBJ)/arraylist.o: $(ARR_SRC)/*.c
 	gcc -o $@ -c $^ -I$(INC)
 
-clean: .PHONY
+.PHONY: clean
 
-.PHONY:
-	rm -rf lib/*
-	rm -rf obj/*
+clean:
+	rm -f $(OBJ)/*
+	rm -f $(LIB)/*
