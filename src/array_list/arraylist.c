@@ -1,4 +1,4 @@
-#include "LIST/list.h"
+#include "LIST/List.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -13,6 +13,7 @@ struct List
     size_t num_vals;
     size_t size;
     List_cmpFunc cmp;
+    List_freeFunc free_func;
 };
 
 size_t List_size(List* list)
@@ -20,11 +21,11 @@ size_t List_size(List* list)
     return (list == NULL)? 0 :  list->num_vals;
 }
 
-List *List_create(List_cmpFunc cmp_func)
+List *List_create(List_cmpFunc cmp_func, List_freeFunc free_func)
 {
     size_t size;
 
-    if(NULL == cmp_func)
+    if(NULL == cmp_func || NULL == free_func)
         return NULL;
 
     size = LIST_SIZE_DEFAULT;
@@ -35,6 +36,7 @@ List *List_create(List_cmpFunc cmp_func)
     
     list->num_vals = 0;
     list->cmp = cmp_func;
+    list->free_func = free_func;
     list->arr = malloc(size * sizeof(void*));
     if(list->arr)
     {
@@ -50,11 +52,20 @@ List *List_create(List_cmpFunc cmp_func)
 
 void List_delete(List* list)
 {
+    size_t iter_ind;
     if(list)
     {
-        if(list->arr)
+        if(list->arr && list->num_vals != 0)
+	{
+	    if (list->free_func != NULL)
+	    {
+	        for (iter_ind=0; iter_ind < list->size; iter_ind++)
+	        {
+		    list->free_func (list->arr[iter_ind]);
+	        }
+	    }
             free(list->arr);
-        
+	}
         free(list);
     }
 }
@@ -79,7 +90,7 @@ bool List_add(List* list, void* val)
     return true;
 }
 
-void* List_removeFrom(List* list, size_t pos)
+void* List_removeFrom(List* list, size_t pos, bool keepValuePtr)
 {
     void *tmp;      /* holds the element that is removed, to be returned to the caller */
     void **new_arr;
@@ -97,8 +108,17 @@ void* List_removeFrom(List* list, size_t pos)
     tmp = list->arr[pos];
     
     if(list->num_vals > 1)
+    {
         list->arr[pos] = list->arr[list->num_vals - 1];
-    
+    }
+
+    list->arr[list->num_vals - 1] = tmp;
+
+    if (keepValuePtr == false && list->free_func != NULL)
+    {
+	list->free_func (list->arr[list->num_vals - 1]);
+    }
+
     list->arr[list->num_vals - 1] = NULL;
     list->num_vals--;
 
@@ -108,8 +128,9 @@ void* List_removeFrom(List* list, size_t pos)
     return tmp;
 }
 
-bool List_remove(List* list, void* val)
+bool List_remove(List* list, void* val, bool keepValuePtr)
 {
+    void *pVal;
     size_t pos;
     
     if(!list)
@@ -131,11 +152,20 @@ bool List_remove(List* list, void* val)
 
     /* not found */
     if(pos == list->num_vals)
-        return NULL;
+        return false;
 
     /* swap the element to be removed with the last element */
     if(list->num_vals > 1)
+    {
+	pVal = list->arr[pos];
         list->arr[pos] = list->arr[list->num_vals - 1];
+	list->arr[list->num_vals - 1] = pVal;
+    }
+
+    if (keepValuePtr == false && list->free_func != NULL)
+    {
+	list->free_func (list->arr[list->num_vals - 1]);
+    }
 
     list->arr[list->num_vals - 1] = NULL;
     list->num_vals--;
@@ -145,8 +175,9 @@ bool List_remove(List* list, void* val)
     return true;
 }
 
-size_t List_removeAll(List* list, void* val)
+size_t List_removeAll(List* list, void* val, bool keepValuePtr)
 {
+    void *tmp;
     size_t removed = 0;
 
     if(!list)
@@ -160,7 +191,14 @@ size_t List_removeAll(List* list, void* val)
     {
         if(0 == list->cmp(list->arr[pos], val))
         {
-            list->arr[pos] = list->arr[list->num_vals];
+	    tmp = list->arr[pos];
+            list->arr[pos] = list->arr[list->num_vals - 1];
+	    list->arr[list->num_vals - 1] = tmp;
+
+	    if (keepValuePtr == false && list->free_func != NULL)
+	    {
+		list->free_func (list->arr[list->num_vals - 1]);
+	    }
             list->num_vals--;
             removed++;
         }
@@ -171,7 +209,7 @@ size_t List_removeAll(List* list, void* val)
     return removed;
 }
 
-void List_clear(List* list)
+void List_clear(List* list, bool keepValuePtr)
 {
     if(!list)
         return;
@@ -179,7 +217,13 @@ void List_clear(List* list)
         return;
 
     for(size_t pos = 0; pos < list->num_vals; pos++)
+    {
+	if (keepValuePtr == false && list->free_func != NULL)
+	{
+	    list->free_func (list->arr[pos]);
+	}
         list->arr[pos] = NULL;
+    }
 }
 
 bool List_upsize(List* list)

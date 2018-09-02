@@ -16,13 +16,18 @@ typedef struct List List;
  */
 typedef int (*List_cmpFunc)(void*, void*);
 
+/* function to free the allocated memory for value objects stored
+ * in the list.
+ */
+typedef void (*List_freeFunc)(void*);
+
 /* List API functions are below.
  */
 
 /*
  * List creation function.
  */
-List *List_create(List_cmpFunc);
+List *List_create(List_cmpFunc, List_freeFunc);
 
 /*
  * free the memory allocated to the given list. do nothing if NULL.
@@ -41,25 +46,25 @@ bool List_add(List*, void*);
  * return: removed element or,
  *         NULL if List is NULL, position is out of bounds.
  */
-void* List_removeFrom(List*,size_t);
+void* List_removeFrom(List*,size_t,bool);
 
 /*
  * remove the first occurance of the given value.
  * return: TRUE if the given value was removed.
  *         FALSE if List,value is NULL or value does not exist.
  */
-bool List_remove(List*, void*);
+bool List_remove(List*, void*,bool);
 
 /*
  * remove all occurances of the given value.
  * return: number of elements removed.
  */
-size_t List_removeAll(List*, void*);
+size_t List_removeAll(List*, void*,bool);
 
 /*
  * remove all the elements of the given list. do nothing if NULL.
  */
-void List_clear(List*);
+void List_clear(List*,bool);
 
 /*
  * check if the given list contains the given value.
