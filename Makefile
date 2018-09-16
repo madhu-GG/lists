@@ -56,7 +56,6 @@ array: $(ARR_LIB)
 
 linked: $(LL_LIB)
 
-
 test: $(TEST_EXEC)
 
 $(TEST_EXEC): $(TESTSRC)/$(TEST_TYPE).c $(LIB)/*.a
